@@ -12,7 +12,7 @@ const updateForecast = (update) => forecastInfo.value = update;
 
 
 let start = ref(1);
-let limit = computed(()=>start.value + 6);
+let limit = computed(() => start.value + 6);
 const currDays = computed(() => {
     try {
         const { days } = forecastInfo.value;
@@ -24,39 +24,30 @@ const currDays = computed(() => {
 });
 
 
-let method = ref('C');
 
-const methodChoice = (methodChoice) => method.value = methodChoice;
-
-const weatherMethod = (deg) => {
-    console.log("i've been touched!", method.value);
-    if(method.value === 'F°'){
-        return `${parseFloat((deg * 9/5) + 32).toFixed(2)} F°`;
-    } else {
-        return `${deg} C°`;
-    }
+const weatherMethod = {
+    F: (deg) => `${Math.round(parseInt((deg * 9 / 5) + 32))} F°`,
+    C: (deg) => `${deg} C°`
 };
 
-// watch(method , ()=> weatherMethod(), console.log("home watch kkkkkkkkkkk", method.value));
-provide('methodUpdate', weatherMethod);
-
-
+provide('methodUpdate', weatherMethod.C);
+const methodChoice = (methodChoice) => provide('methodUpdate', weatherMethod[methodChoice]);
 
 </script>
 
 <template>
     <div class="location-container methods-container">
-         <forecast-location @forecast-update="updateForecast" class="location-container"/>
-        <forecast-method @method-choice="methodChoice"/>
+        <forecast-location @forecast-update="updateForecast" class="location-container" />
+        <forecast-method @method-choice="methodChoice" />
     </div>
-   
+
     <div class="main-weather-container">
         <div class="today-card">
-            <todays-forecast :forecast-info="forecastInfo"/>
+            <todays-forecast :forecast-info="forecastInfo" />
         </div>
         <div class="day-container">
             <div class="more left" v-if="start > 1" @click="start--"><i class='bx bxs-left-arrow'></i></div>
-            <DayCard v-for="(day, i) in currDays" :key="i" :forecast-info="day"/>
+            <DayCard v-for="(day, i) in currDays" :key="i" :forecast-info="day" />
             <div class="more right" v-if="start < currDays.length" @click="start++"><i class='bx bxs-right-arrow'></i></div>
         </div>
 
@@ -85,11 +76,9 @@ h3 {
 .main-weather-container {
     margin-top: 70px;
     background: rgb(239, 239, 239);
-    width: 94vw;
+    width: 93vw;
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
-    /* display: flex;
-    justify-content: baseline; */
 }
 
 .day-container {
@@ -128,7 +117,7 @@ h3 {
     background: red;
 } */
 
-.more:hover{
+.more:hover {
     background: #000000a4;
 }
 

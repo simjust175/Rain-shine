@@ -18,26 +18,26 @@
         <div class="more-info">
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Hi of </p><i class='bx bxs-up-arrow hi'></i>
-                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.tempmax }}</p>
+                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.tempmax }}°</p>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Low of</p> <i class='bx bxs-down-arrow low'></i>
-                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.tempmin }}</p>
+                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.tempmin }}°</p>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Wind-speed</p> <i class='bx bx-wind'></i>
-                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.windspeed }}Mph</p>
+                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.windspeed }}<span class="more-info-method">Mph</span></p>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Feels like</p><i class='bx bxs-thermometer'></i>
-                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.feelslike }}</p>
+                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.feelslike }}°</p>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Humidity</p> <i class="bx bxs-droplet"></i>
                 <p>{{ forecastInfo.humidity }}%</p>
             </div>
             <div v-if="forecastInfo.snowdepth > 0">
-                <p v-show="hovered" @mouseenter="hovered = !hovered">Feels like</p><i class='bx bxs-snowflake'></i>
+                <p v-show="hovered" @mouseenter="hovered = !hovered">snow depth</p><i class='bx bxs-snowflake'></i>
                 <p>{{ forecastInfoDay1.snowdepth }}Inch ?</p>
             </div>
         </div>
@@ -48,21 +48,22 @@
 import { ref, defineProps, computed, watch, inject } from 'vue';
 const props = defineProps({ forecastInfo: Object });
 
-const weatherMethod = ref((inject('methodUpdate')));
+console.log("update:9");
+const weatherMethod = inject('methodUpdate');
+watch(weatherMethod, ()=> {console.log("injection>>>>>", weatherMethod); weatherMethod}, { deep:true })
 
 const state = ref({
     time: new Date().getHours(),
     hovered: false,
-    weatherMethod: 'C°'
 });
 
 const forecastInfoDay1 = ref({});
 watch(() => props.forecastInfo, (update) => {
-    console.log("watch triggered", update, update.days[0]);
     forecastInfoDay1.value = update.days[0];
 }, {
     deep: true
 });
+
 const timeOfDay = computed(() => state.value.time > 6 && state.value.time < 20 ? 'day' : 'night2');
 
 const greeting = computed(() => {
@@ -130,6 +131,11 @@ const greeting = computed(() => {
     align-items: center;
 }
 
+.more-info-method {
+    font-size: 10px;
+    margin-left: 3px;
+}
+
 .today-img {
     height: 320px;
     position: absolute;
@@ -139,8 +145,13 @@ const greeting = computed(() => {
 }
 
 .partly-cloudy-night,
-.cloudy {
+.cloudy{
     top: 65%;
+}
+
+.rain {
+    height: 291px;
+    top: 47%;
 }
 
 .more-info {

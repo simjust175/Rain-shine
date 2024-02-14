@@ -18,7 +18,7 @@ let counter = 0;
 const getForecast = async (lat, lon) => {
   try {
     const res = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${lat},${lon}?unitGroup=metric&key=JFP3F6HVT2HYAB2NSQQQUAL2L&contentType=json`);
-    const { days, timezone, currentConditions: { temp, feelslike, humidity, conditions, icon } } = await res.json();console.log("res", res);
+    const { days, timezone, currentConditions: { temp, feelslike, humidity, conditions, icon } } = await res.json(); console.log("res", res);
     console.log("res", days[0], counter++);
     forecastArray.value = { days, timezone, temp, feelslike, humidity, conditions, icon };
     emit('forecastUpdate', forecastArray.value)
@@ -58,14 +58,20 @@ const locationChoiceHandler = (choice) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 10px;
+}
+
+.drop-down:hover,
+.drop-down-list:hover {
+  cursor: pointer;
 }
 
 .drop-down-list {
-  background: rgb(248, 171, 171);
+  background: #dbe2e4;
 }
 
 .drop-down-list li:hover {
-  background: rgb(203, 238, 249);
+  background: rgb(231, 249, 255);
 }
 
 ul {

@@ -6,7 +6,7 @@ const props = defineProps({
 });
 
 const weatherMethod = inject('methodUpdate');
-// watch(()=> props.weatherMethod,(n)=> console.log("wathching fffccc", n), { deep : true});
+
 const days = ['Error', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 
@@ -34,8 +34,8 @@ const timeOfDay = computed(() => {
     <div class="temp-container">
       <h1>{{ weatherMethod(forecastInfo.temp) }}<span class="weatherMethod"></span></h1>
       <div class="hi-lo">
-        <div class="hi-lo"><i class='bx bxs-up-arrow'></i> {{ forecastInfo.tempmax }} </div>
-        <div class="hi-lo"><i class='bx bxs-down-arrow'></i> {{ forecastInfo.tempmin }} </div>
+        <div class="hi-lo"><i class='bx bxs-up-arrow'></i> {{ forecastInfo.tempmax }}°</div>
+        <div class="hi-lo"><i class='bx bxs-down-arrow'></i> {{ forecastInfo.tempmin }}° </div>
       </div>
     </div>
 
