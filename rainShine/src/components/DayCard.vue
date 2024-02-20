@@ -5,7 +5,8 @@ const props = defineProps({
   forecastInfo: Object
 });
 
-const weatherMethod = inject('methodUpdate');
+let providedMethod = inject('methodUpdate');
+const weatherMethod = computed(()=> providedMethod.value);
 
 const days = ['Error', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -50,7 +51,7 @@ const timeOfDay = computed(() => {
 <style scoped>
 .main-card-container {
   margin: 8px;
-  box-shadow: 1px 1px 1px #535353;
+  box-shadow: 1px 1px 7px #535353;
   background: linear-gradient(lightblue, skyblue, #bcefff);
   /* background: url(../../public/backgrounds/36.svg); */
   background-position: center;

@@ -2,11 +2,11 @@
   <div class="method-container">
     <label for="C">      
       <input type="radio" id="C" name="method" value="C" class="peer radio" v-model="methodChoice" checked/>
-      <div class="icon">C°</div>
+      <div class="icon">C<span class="degree">°</span></div>
     </label>
     <label for="F"> 
       <input type="radio" id="F" name="method" value="F" class="peer radio" v-model="methodChoice" />
-      <div class="icon">F°</div>
+      <div class="icon">F<span class="degree">°</span></div>
     </label>
   </div>
 </template>
@@ -55,8 +55,18 @@ input[type="radio"] {
   border-radius: 0.5rem;
   padding: 0.5rem;
   overflow: hidden;
+  font-size: 20px;
 }
 
+.degree{
+  font-size: 10px;
+  text-align: start;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 0;
+  margin-top: 0;
+  padding-right: 1px;
+}
 .icon:hover {
   cursor: pointer;
   background-color: rgba(173, 216, 230, 0.1);
@@ -64,5 +74,6 @@ input[type="radio"] {
 
 .peer:checked~.icon {
   background-color:rgb(173, 216, 230, 0.8);
+  font-weight: 600;
 }
 </style>

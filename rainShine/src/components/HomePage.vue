@@ -25,14 +25,16 @@ const currDays = computed(() => {
 
 
 
+const methodChoice = (methodChoice) => method.value = methodChoice;
+
+const method = ref('C');
 const weatherMethod = {
     F: (deg) => `${Math.round(parseInt((deg * 9 / 5) + 32))} F°`,
     C: (deg) => `${deg} C°`
 };
 
-provide('methodUpdate', weatherMethod.C);
-const methodChoice = (methodChoice) => provide('methodUpdate', weatherMethod[methodChoice]);
-
+const provideMethod = computed(() => weatherMethod[method.value]);
+provide('methodUpdate', provideMethod);
 </script>
 
 <template>
@@ -65,6 +67,8 @@ h1 {
 h3 {
     font-size: 1.2rem;
 }
+
+
 
 .methods-container {
     display: flex;

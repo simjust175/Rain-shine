@@ -1,23 +1,31 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router';
+import { RouterView } from 'vue-router';
+import { ref, computed } from 'vue';
+let imgType = ref('svg');
+const imgSrc = computed(()=> `../../public/RainDrop_blue.${imgType.value}`)
 </script>
 
 <template>
-  <!-- <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav> 
-    </div>
-  </header> -->
+<div class="logo"  @mouseenter="imgType='gif'" @mouseleave="imgType='svg'"><img :src="imgSrc" alt="RainDrop"></div>
 
   <RouterView />
 </template>
 
 <style scoped>
+.logo {
+    position: absolute;
+    top: -93px;
+    left: -22px;
+}
+
+.logo img{  
+    height: 250px;
+}
+
+.logo:hover {
+  cursor: pointer;
+}
+
 header {
   line-height: 1.5;
   max-height: 100vh;

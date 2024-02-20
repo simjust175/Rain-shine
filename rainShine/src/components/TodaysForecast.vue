@@ -2,39 +2,53 @@
     <div class="today-card-container" :class="timeOfDay">
         <div class="main-weather">
             <div class="temp-info">
-                <h1>{{ weatherMethod(forecastInfo.temp) }}</h1>
-                <div>
-                    <p>{{ forecastInfo.conditions }}</p>
+                <p id="location"><i class='bx bxs-map'></i>{{ forecastInfo.timezone?.split("/").pop() }}</p>
+                <h1 v-if="forecastInfo.currentConditions">
+                    {{ weatherMethod(forecastInfo.currentConditions.temp) }}
+                    <!-- <span style="font-size: 0.7em; vertical-align: super;">{{ method.value === 'F' ? 'F°' : 'C°' }}</span> -->
+                </h1>
+                <div class="loading-container" v-else>
+                    <div class="loading-spinner"></div>
+                </div>
+                <div v-if="forecastInfo.currentConditions">
+                    <p>{{ forecastInfo.currentConditions.conditions }}</p>
                 </div>
             </div>
             <div class="greeting">
                 <h3> Good {{ greeting }}</h3>
             </div>
-            <img :src="`/weather_icons/${forecastInfo.icon}.svg`" :alt="forecastInfo.icon" class="today-img"
-                :class="forecastInfo.icon">
+            <img :src="`/weather_icons/${forecastInfo.currentConditions.icon}.svg`"
+                :alt="forecastInfo.currentConditions.icon" class="today-img" :class="forecastInfo.currentConditions.icon"
+                v-if="forecastInfo.currentConditions">
+
 
         </div>
 
         <div class="more-info">
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Hi of </p><i class='bx bxs-up-arrow hi'></i>
-                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.tempmax }}°</p>
+                <p v-if="forecastInfoDay1">{{ weatherMethod(forecastInfoDay1.tempmax).slice(0, -2) }}°</p>
+                <div class="loading-spinner small" v-else></div>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Low of</p> <i class='bx bxs-down-arrow low'></i>
-                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.tempmin }}°</p>
+                <p v-if="forecastInfoDay1">{{ weatherMethod(forecastInfoDay1.tempmin).slice(0, -2) }}°</p>
+                <div class="loading-spinner small" v-else></div>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Wind-speed</p> <i class='bx bx-wind'></i>
                 <p v-if="forecastInfoDay1">{{ forecastInfoDay1.windspeed }}<span class="more-info-method">Mph</span></p>
+                <div class="loading-spinner small" v-else></div>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Feels like</p><i class='bx bxs-thermometer'></i>
-                <p v-if="forecastInfoDay1">{{ forecastInfoDay1.feelslike }}°</p>
+                <p v-if="forecastInfoDay1">{{ weatherMethod(forecastInfoDay1.feelslike).slice(0, -2) }}°</p>
+                <div class="loading-spinner small" v-else></div>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Humidity</p> <i class="bx bxs-droplet"></i>
-                <p>{{ forecastInfo.humidity }}%</p>
+                <p v-if="forecastInfo.currentConditions">{{ forecastInfo.currentConditions.humidity }}%</p>
+                <div class="loading-spinner small" v-else></div>
             </div>
             <div v-if="forecastInfo.snowdepth > 0">
                 <p v-show="hovered" @mouseenter="hovered = !hovered">snow depth</p><i class='bx bxs-snowflake'></i>
@@ -48,12 +62,12 @@
 import { ref, defineProps, computed, watch, inject } from 'vue';
 const props = defineProps({ forecastInfo: Object });
 
-console.log("update:9");
-const weatherMethod = inject('methodUpdate');
-watch(weatherMethod, ()=> {console.log("injection>>>>>", weatherMethod); weatherMethod}, { deep:true })
+let providedMethod = inject('methodUpdate');
+const weatherMethod = computed(() => providedMethod.value);
 
 const state = ref({
     time: new Date().getHours(),
+    //time: parseInt(props.forecastInfo.currentCondition?.datetime.split(":")),
     hovered: false,
 });
 
@@ -64,19 +78,56 @@ watch(() => props.forecastInfo, (update) => {
     deep: true
 });
 
+
 const timeOfDay = computed(() => state.value.time > 6 && state.value.time < 20 ? 'day' : 'night2');
 
 const greeting = computed(() => {
-    const time = state.value.time;
-    return time >= 21 || time < 5 ? 'Night' :
-        time >= 18 ? 'Evening' :
-            time >= 12 ? 'Afternoon' :
-                time >= 5 ? 'Morning' :
-                    'Error: wrong time format';
-})
+    try {
+        const time = state.value.time;
+        console.log("time", time);
+        return time >= 21 || time < 5 ? 'Night' :
+            time >= 18 ? 'Evening' :
+                time >= 12 ? 'Afternoon' :
+                    time >= 5 ? 'Morning' :
+                        '?... not really: wrong time format';
+
+    } catch (error) {
+        return error.message;
+    }
+});
+
 </script>
 
 <style>
+.loading-spinner {
+    margin-top: 50px;
+    margin-left: 40px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    animation: spin 2s linear infinite;
+}
+
+.small {
+    width: 10px;
+    height: 10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    margin: 0;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .today-card-container {
     position: relative;
     height: 253px;
@@ -103,19 +154,24 @@ const greeting = computed(() => {
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    color: rgb(0, 24, 122);
+    color: #00187a;
 }
 
 .greeting {
     position: absolute;
     top: 8px;
     left: 37%;
-    color: #9aa9e1;
+    color: #cccdcf;
     text-shadow: 1px 1px 10px #767676;
 }
 
 .temp-info {
     padding-left: 30px;
+}
+
+#location {
+    font-size: 20px;
+    position: absolute;
 }
 
 .more-info {
@@ -145,13 +201,17 @@ const greeting = computed(() => {
 }
 
 .partly-cloudy-night,
-.cloudy{
+.cloudy {
     top: 65%;
 }
 
 .rain {
     height: 291px;
     top: 47%;
+}
+
+.clear-day {
+    top: 44%;
 }
 
 .more-info {
