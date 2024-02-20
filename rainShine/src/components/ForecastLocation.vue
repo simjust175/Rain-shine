@@ -74,7 +74,6 @@ const fetchForecast = async (area) => {
 
 //Update the location every time a new area is Emitted.
 watch(() => state.value.locationMethod, (newArea) => {
-  console.log("ip wTacher has been inialized", newArea);
   fetchForecast(newArea)
 });
 
