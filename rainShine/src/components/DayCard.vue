@@ -52,10 +52,10 @@ const timeOfDay = computed(() => {
 .main-card-container {
   margin: 8px;
   box-shadow: 1px 1px 7px #535353;
-  background: linear-gradient(lightblue, skyblue, #bcefff);
+  background: linear-gradient(rgb(184, 219, 231), rgb(146, 210, 236), #C8F2FF);
   /* background: url(../../public/backgrounds/36.svg); */
   background-position: center;
-  border-radius: 30px;
+  border-radius: 15px;
   height: 240px;
   width: 180px;
   display: flex;

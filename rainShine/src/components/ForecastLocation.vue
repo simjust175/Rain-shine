@@ -138,7 +138,7 @@ fetchLocations();
 }
 
 ul {
-  width: 200px;
+  width: 320px;
   list-style: none;
   padding: 0;
   position: absolute;
@@ -155,12 +155,10 @@ ul {
 ul::-webkit-scrollbar {
   width: 0;
   color: transparent;
-  /* Adjust width as needed */
 }
 
 ul::-webkit-scrollbar-track {
-  background-color: transparent;
-  /* Hide track */
+  background-color: transparent;/* Hides the track */
 }
 
 .drop-down-list {

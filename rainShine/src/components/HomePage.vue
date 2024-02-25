@@ -29,8 +29,8 @@ const methodChoice = (methodChoice) => method.value = methodChoice;
 
 const method = ref('C');
 const weatherMethod = {
-    F: (deg) => `${Math.round(parseInt((deg * 9 / 5) + 32))} F°`,
-    C: (deg) => `${deg} C°`
+    F: (deg) => `${Math.round(parseInt((deg * 9 / 5) + 32))}° F`,
+    C: (deg) => `${deg}° C`
 };
 
 const provideMethod = computed(() => weatherMethod[method.value]);

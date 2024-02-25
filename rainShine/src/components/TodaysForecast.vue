@@ -3,7 +3,7 @@
         <div class="main-weather">
             <div class="temp-info">
                 <p id="location"><i class='bx bxs-map'></i>{{ forecastInfo.timezone?.split("/").pop() }}</p>
-                <h1 v-if="forecastInfo.currentConditions">
+                <h1 v-if="forecastInfo.currentConditions" id="temp-container">
                     {{ weatherMethod(forecastInfo.currentConditions.temp) }}
                     <!-- <span style="font-size: 0.7em; vertical-align: super;">{{ method.value === 'F' ? 'F°' : 'C°' }}</span> -->
                 </h1>
@@ -27,28 +27,28 @@
         <div class="more-info">
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Hi of </p><i class='bx bxs-up-arrow hi'></i>
-                <p v-if="forecastInfoDay1">{{ weatherMethod(forecastInfoDay1.tempmax).slice(0, -2) }}°</p>
-                <div class="loading-spinner small" v-else></div>
+                <p v-if="forecastInfoDay1">{{ weatherMethod(forecastInfoDay1.tempmax).slice(0, -2) }}</p>
+                <div class="loading-spinner small-spinners" v-else></div>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Low of</p> <i class='bx bxs-down-arrow low'></i>
-                <p v-if="forecastInfoDay1">{{ weatherMethod(forecastInfoDay1.tempmin).slice(0, -2) }}°</p>
-                <div class="loading-spinner small" v-else></div>
+                <p v-if="forecastInfoDay1">{{ weatherMethod(forecastInfoDay1.tempmin).slice(0, -2) }}</p>
+                <div class="loading-spinner small-spinners" v-else></div>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Wind-speed</p> <i class='bx bx-wind'></i>
                 <p v-if="forecastInfoDay1">{{ forecastInfoDay1.windspeed }}<span class="more-info-method">Mph</span></p>
-                <div class="loading-spinner small" v-else></div>
+                <div class="loading-spinner small-spinners" v-else></div>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Feels like</p><i class='bx bxs-thermometer'></i>
-                <p v-if="forecastInfoDay1">{{ weatherMethod(forecastInfoDay1.feelslike).slice(0, -2) }}°</p>
-                <div class="loading-spinner small" v-else></div>
+                <p v-if="forecastInfoDay1">{{ weatherMethod(forecastInfoDay1.feelslike).slice(0, -2) }}</p>
+                <div class="loading-spinner small-spinners" v-else></div>
             </div>
             <div>
                 <p v-show="hovered" @mouseenter="hovered = !hovered">Humidity</p> <i class="bx bxs-droplet"></i>
                 <p v-if="forecastInfo.currentConditions">{{ forecastInfo.currentConditions.humidity }}%</p>
-                <div class="loading-spinner small" v-else></div>
+                <div class="loading-spinner small-spinners" v-else></div>
             </div>
             <div v-if="forecastInfo.snowdepth > 0">
                 <p v-show="hovered" @mouseenter="hovered = !hovered">snow depth</p><i class='bx bxs-snowflake'></i>
@@ -62,14 +62,16 @@
 import { ref, defineProps, computed, watch, inject } from 'vue';
 const props = defineProps({ forecastInfo: Object });
 
+
 let providedMethod = inject('methodUpdate');
 const weatherMethod = computed(() => providedMethod.value);
 
 const state = ref({
     time: new Date().getHours(),
-    //time: parseInt(props.forecastInfo.currentCondition?.datetime.split(":")),
+    //time: props.forecastInfo.currentCondition ? props.forecastInfo.currentCondition.datetime.split(":") : null,
     hovered: false,
 });
+
 
 const forecastInfoDay1 = ref({});
 watch(() => props.forecastInfo, (update) => {
@@ -78,22 +80,22 @@ watch(() => props.forecastInfo, (update) => {
     deep: true
 });
 
-
-const timeOfDay = computed(() => state.value.time > 6 && state.value.time < 20 ? 'day' : 'night2');
+const timeOfDay = computed(() => state.value.time + props.forecastInfo.tzoffset > 6 && state.value.time + props.forecastInfo.tzoffset < 20 ? 'day' : 'night2');
 
 const greeting = computed(() => {
     try {
-        const time = state.value.time;
-        console.log("time", time);
-        return time >= 21 || time < 5 ? 'Night' :
-            time >= 18 ? 'Evening' :
-                time >= 12 ? 'Afternoon' :
-                    time >= 5 ? 'Morning' :
-                        '?... not really: wrong time format';
-
+        const timeZoneOffset = props.forecastInfo.tzoffset;
+        console.log("offset", timeZoneOffset)
     } catch (error) {
-        return error.message;
+        console.error(error.nessage);
     }
+    const time = parseInt(state.value.time) + props.forecastInfo.tzoffset;
+    return time >= 21 || time < 5 ? 'Night' :
+        time >= 18 ? 'Evening' :
+            time >= 12 ? 'Afternoon' :
+                time >= 5 ? 'Morning' :
+                    '?... not really: wrong time format';
+
 });
 
 </script>
@@ -110,9 +112,9 @@ const greeting = computed(() => {
     animation: spin 2s linear infinite;
 }
 
-.small {
-    width: 10px;
-    height: 10px;
+.small-spinners {
+    width: 15px;
+    height: 15px;
     border: 2px solid #f3f3f3;
     border-top: 2px solid #3498db;
     margin: 0;
@@ -137,8 +139,7 @@ const greeting = computed(() => {
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    /* background: linear-gradient(#00388b, rgb(0, 0, 96)); */
-    border-radius: 40px;
+    border-radius: 15px;
     color: aliceblue;
     box-shadow: 2px 2px 2px #bcbcbc;
     display: flex;
@@ -147,6 +148,10 @@ const greeting = computed(() => {
     font-size: 40px;
     text-shadow: #bcbcbc 2px 2px 2px 2px;
     overflow: hidden;
+}
+
+#temp-container{
+    margin-top: 20px;
 }
 
 .day {
@@ -172,6 +177,7 @@ const greeting = computed(() => {
 #location {
     font-size: 20px;
     position: absolute;
+    top: 10px;
 }
 
 .more-info {
@@ -193,16 +199,21 @@ const greeting = computed(() => {
 }
 
 .today-img {
-    height: 320px;
+    
+    height: 200px;
     position: absolute;
-    top: 35%;
+    top: 20%;
     left: 83%;
     transform: translate(-50%, -50%);
 }
 
-.partly-cloudy-night,
+
 .cloudy {
-    top: 65%;
+    top: 60%;
+}
+
+.partly-cloudy-night{
+    top: 45%;
 }
 
 .rain {
@@ -212,6 +223,11 @@ const greeting = computed(() => {
 
 .clear-day {
     top: 44%;
+}
+
+.clear-night{
+    height: 150px;
+    top: 50%;
 }
 
 .more-info {
@@ -237,5 +253,9 @@ const greeting = computed(() => {
 .bx-wind {
     color: #767676;
     font-size: 17px;
+}
+
+.bxs-map{
+    margin-right: 2px;
 }
 </style>
